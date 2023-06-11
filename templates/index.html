@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Plagiarism Checker and AI Text Detection</title>
+    <style>
+      body {
+        background-color: #333;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin-top: 0;
+        text-align: center;
+      }
+
+      form {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      textarea {
+        width: 80%;
+        height: 35vh;
+        font-size: 16px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        resize: vertical;
+        min-height: 200px;
+        background-color: #282828;
+        color: #fff;
+        /* Customize the scrollbar for the textarea */
+        scrollbar-width: thin;
+        scrollbar-color: #666 #333;
+      }
+
+      input[type="submit"] {
+        background-color: #007bff;
+        color: #fff;
+        font-size: 16px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .chart-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 40px;
+        width: 70%; /* Adjust the width as desired */
+        margin-left: auto; /* Centers the container by pushing it to the right */
+        margin-right: auto;
+      }
+
+      .chart-card {
+        background-color: #444;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 20px;
+        flex-basis: 30%;
+        width: 300px;
+      }
+
+      .plagiarized-text {
+        color: red;
+        font-weight: bold;
+      }
+
+      .ai-text {
+        color: green;
+        font-weight: bold;
+      }
+
+      .output-card {
+        background-color: #444;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+
+      .highlight {
+        background-color: blue;
+        font-weight: bold;
+        display: inline-block;
+        padding: 2px 5px;
+        border-radius: 3px;
+        margin-right: 3px;
+      }
+
+      /* Customize the scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background-color: #333;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background-color: #666;
+        border-radius: 5px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #888;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      function highlightPlagiarizedText() {
+        var queryText = document.getElementById("query-text").value;
+        var plagiarizedTexts = JSON.parse("{{ plagiarized_texts|tojson }}");
+
+        plagiarizedTexts.forEach(function (text) {
+          var regex = new RegExp(text, "gi");
+          queryText = queryText.replace(
+            regex,
+            '<span class="plagiarized-text">$&</span>'
+          );
+        });
+
+        document.getElementById("query-text").innerHTML = queryText;
+      }
+    </script>
+  </head>
+  <body onload="highlightPlagiarizedText()">
+    <h1>Plagiarism Checker and AI Text Detection</h1>
+    <form action="/" method="POST">
+      <label for="query-text">Enter query:</label><br />
+      <textarea
+        name="query"
+        id="query-text"
+        placeholder="Enter query here"
+      ></textarea
+      ><br /><br />
+      <input type="submit" value="Check Plagiarism and Detect AI Text" />
+    </form>
+    <div class="chart-container">
+      <div class="chart-card">
+        <canvas
+          id="plagiarism-percentage-chart"
+          width="180"
+          height="180"
+        ></canvas>
+      </div>
+      <div class="chart-card">
+        <canvas id="ai-percentage-chart" width="180" height="180"></canvas>
+      </div>
+    </div>
+    <h3 class="progress-bar-text">{{output}}</h3>
+    {% if is_ai_text %}
+    <h2 class="ai-text">AI-generated text detected!</h2>
+    {% else %}
+    <h2>AI-generated text not detected.</h2>
+    {% endif %}
+    <div class="output-card">
+      <p>
+        {% for word in query.split() %} {% if word in plagiarized_texts %}
+        <span class="highlight">{{ word }}</span>
+        {% else %} {{ word }} {% endif %} {% if not loop.last %} {% endif %} {%
+        endfor %}
+      </p>
+    </div>
+    <script>
+      // Get the plagiarism percentage and AI percentage from the template variables
+      var plagiarismPercentage = {{ percentage }};
+      var aiPercentage = {{ ai_percentage }};
+
+      // Create a chart using Chart.js for plagiarism percentage
+      var plagiarismPercentageCtx = document.getElementById("plagiarism-percentage-chart").getContext("2d");
+      var plagiarismPercentageChart = new Chart(plagiarismPercentageCtx, {
+        type: "doughnut",
+        data: {
+          labels: ["Plagiarized", "Original"],
+          datasets: [
+            {
+              data: [plagiarismPercentage, 100 - plagiarismPercentage],
+              backgroundColor: ["#39ace7", "#666666"],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          cutoutPercentage: 80,
+          legend: {
+            display: true,
+            labels: {
+              fontColor: "#fff",
+            },
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: "Plagiarism Percentage",
+              font: {
+                size: 18,
+              },
+              padding: {
+                top: 10,
+                bottom: 20
+              }
+            }
+          }
+        },
+      });
+
+      // Create a chart using Chart.js for AI percentage
+      var aiPercentageCtx = document.getElementById("ai-percentage-chart").getContext("2d");
+      var aiPercentageChart = new Chart(aiPercentageCtx, {
+        type: "doughnut",
+        data: {
+          labels: ["AI-generated", "Human-written"],
+          datasets: [
+            {
+              data: [aiPercentage, 100 - aiPercentage],
+              backgroundColor: ["#ff6eff", "#666666"],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          cutoutPercentage: 80,
+          legend: {
+            display: true,
+            labels: {
+              fontColor: "#fff",
+            },
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: "AI Text Percentage",
+              font: {
+                size: 18,
+              },
+              padding: {
+                top: 10,
+                bottom: 20
+              }
+            }
+          }
+        },
+      });
+    </script>
+  </body>
+</html>
