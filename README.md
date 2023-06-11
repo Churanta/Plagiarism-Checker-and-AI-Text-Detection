@@ -8,7 +8,7 @@ This is a Flask web application that serves as a Plagiarism Checker and AI Text 
 1. Install the necessary dependencies by running the following command:
 
    
-   'pip install flask'
+   `pip install flask `
    
 
 2. Clone this repository to your local machine.
