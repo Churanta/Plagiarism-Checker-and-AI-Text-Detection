@@ -25,6 +25,17 @@ This is a Flask web application that serves as a Plagiarism Checker and AI Text 
 
 6. The application will display the plagiarism percentage, identified plagiarized texts, and whether the input text is AI-generated or not.
 
+## Video 
+
+
+https://github.com/Churanta/Plagiarism-Checker-and-AI-Text-Detection/assets/83538805/87841c2e-3c68-4936-b7ee-a437fceacad8
+
+
+https://github.com/Churanta/Plagiarism-Checker-and-AI-Text-Detection/assets/83538805/1b32fbce-c5cf-4d9c-ac2f-f9e6ca45b0ee
+
+
+
+
 ## Requirements
 
 - Python 3.x
