@@ -185,7 +185,26 @@
         height: 100px;
         z-index: 9999;
       }
+      .submit-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #FF5E7D, #FF8E53);
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  }
 
+  .submit-btn:hover {
+    background: linear-gradient(45deg, #FF8E53, #FF5E7D);
+    transform: scale(1.05);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  }
 
 
     </style>
@@ -227,7 +246,7 @@
         placeholder="Enter query here"
       ></textarea
       ><br /><br />
-      <input type="submit" value="Check Plagiarism and Detect AI Text" />
+      <input type="submit" value="Submit" class="submit-btn" />
     </form>
     <div class="chart-container">
       <div class="chart-card">
