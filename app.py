@@ -7,6 +7,7 @@ app = Flask("__name__")
 
 # Define a threshold for detecting AI-generated text
 ai_generated_threshold = 0.8
+ai_detection_threshold = 10  # AI Text detection threshold
 
 
 def calculate_ai_percentage(text):
@@ -25,31 +26,19 @@ def calculate_ai_percentage(text):
 
 @app.route("/")
 def loadPage():
-    return render_template(
-        'index.html', query="", percentage=0, plagiarized_texts=[], ai_text=""
-    )
+    return render_template('index.html')
 
 
 @app.route("/", methods=['POST'])
 def detect_plagiarism_and_ai_text():
     try:
-        universalSetOfUniqueWords = []
-        matchPercentage = 0
-        plagiarizedTexts = []
-
-        ####################################################################################################
-
         inputQuery = request.form['query']
         lowercaseQuery = inputQuery.lower()
 
         # Replace punctuation by space and split
         queryWordList = re.sub("[^\w]", " ", lowercaseQuery).split()
 
-        for word in queryWordList:
-            if word not in universalSetOfUniqueWords:
-                universalSetOfUniqueWords.append(word)
-
-        ####################################################################################################
+        universalSetOfUniqueWords = list(set(queryWordList))
 
         fd = open("database1.txt", "r")
         database1 = fd.read().lower()
@@ -57,57 +46,32 @@ def detect_plagiarism_and_ai_text():
         # Replace punctuation by space and split
         databaseWordList = re.sub("[^\w]", " ", database1).split()
 
-        for word in databaseWordList:
-            if word not in universalSetOfUniqueWords:
-                universalSetOfUniqueWords.append(word)
-
-        ####################################################################################################
+        universalSetOfUniqueWords += list(set(databaseWordList) - set(universalSetOfUniqueWords))
 
         queryTF = []
         databaseTF = []
 
         for word in universalSetOfUniqueWords:
-            queryTfCounter = 0
-            databaseTfCounter = 0
-
-            for word2 in queryWordList:
-                if word == word2:
-                    queryTfCounter += 1
+            queryTfCounter = queryWordList.count(word)
+            databaseTfCounter = databaseWordList.count(word)
             queryTF.append(queryTfCounter)
-
-            for word2 in databaseWordList:
-                if word == word2:
-                    databaseTfCounter += 1
             databaseTF.append(databaseTfCounter)
 
-        dotProduct = 0
-        for i in range(len(queryTF)):
-            dotProduct += queryTF[i] * databaseTF[i]
+        dotProduct = sum(queryTF[i] * databaseTF[i] for i in range(len(queryTF)))
 
-        queryVectorMagnitude = 0
-        for i in range(len(queryTF)):
-            queryVectorMagnitude += queryTF[i] ** 2
-        queryVectorMagnitude = math.sqrt(queryVectorMagnitude)
+        queryVectorMagnitude = math.sqrt(sum(tf ** 2 for tf in queryTF))
+        databaseVectorMagnitude = math.sqrt(sum(tf ** 2 for tf in databaseTF))
 
-        databaseVectorMagnitude = 0
-        for i in range(len(databaseTF)):
-            databaseVectorMagnitude += databaseTF[i] ** 2
-        databaseVectorMagnitude = math.sqrt(databaseVectorMagnitude)
-
-        matchPercentage = (
-                dotProduct / (queryVectorMagnitude * databaseVectorMagnitude)) * 100
+        matchPercentage = (dotProduct / (queryVectorMagnitude * databaseVectorMagnitude)) * 100
 
         # Identify plagiarized texts
-        for word in queryWordList:
-            if word in databaseWordList and word not in plagiarizedTexts:
-                plagiarizedTexts.append(word)
+        plagiarizedTexts = list(set(queryWordList) & set(databaseWordList))
 
         output = "%0.02f%% Plagiarism Found" % matchPercentage
 
-        ####################################################################################################
-
         ai_percentage = calculate_ai_percentage(inputQuery)
         is_ai_text = ai_percentage > ai_generated_threshold
+        ai_text_detected = ai_percentage > ai_detection_threshold
 
         return render_template(
             'index.html',
@@ -117,10 +81,12 @@ def detect_plagiarism_and_ai_text():
             plagiarized_texts=plagiarizedTexts,
             ai_text=inputQuery,
             ai_percentage=ai_percentage,
-            is_ai_text=is_ai_text
+            is_ai_text=is_ai_text,
+            ai_text_detected=ai_text_detected
         )
     except Exception as e:
         return "Error occurred: " + str(e)
 
 
-app.run()
+if __name__ == "__main__":
+    app.run()
