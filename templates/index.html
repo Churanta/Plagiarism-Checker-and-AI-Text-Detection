@@ -3,6 +3,68 @@
   <head>
     <title>Plagiarism Checker and AI Text Detection</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap");
+
+      :root{
+        --color1: #01579B;
+        --color2: #00838F;
+        --color3: #FFD600;
+        --color4: #FF4081;
+        --color5: #F44336;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      h1 {
+        color: #fff;
+        text-transform: uppercase;
+        
+        text-align: center;
+        font-family: "Luckiest Guy", cursive;
+        font-size: 45vh;
+        line-height: 550%;
+        background:linear-gradient(225deg,
+          var(--color1) 0%, var(--color1) 9%,
+          transparent 9%, 
+          var(--color2) 10%, var(--color2) 19%,
+          transparent 19%, 
+          var(--color3) 20%, var(--color3) 29%,
+          transparent 29%, 
+          var(--color4) 30%, var(--color4) 39%,
+          transparent 39%, 
+          var(--color5) 40%, var(--color5) 49%,
+          transparent 49%, 
+          var(--color1) 50%, var(--color1) 59%,
+          transparent 59%, 
+          var(--color2) 60%, var(--color2) 69%,
+          transparent 69%, 
+          var(--color3) 70%, var(--color3) 79%,
+          transparent 79%, 
+          var(--color4) 80%, var(--color4) 89%,
+          transparent 89%, 
+          var(--color5) 90%, var(--color5) 99%,
+          transparent 99%
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        background-size: 200% 200%;
+        color: transparent;
+        animation: move 6s linear infinite;
+      }
+
+      @keyframes move {
+        0%{
+          background-position: 0px 100%;
+        }
+        100%{
+          background-position: 100% 0px;
+        }
+      }
+
       body {
         background-color: #333;
         color: #fff;
