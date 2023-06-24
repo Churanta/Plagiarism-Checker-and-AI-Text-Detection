@@ -5,9 +5,10 @@ import string
 
 app = Flask("__name__")
 
-# Define a threshold for detecting AI-generated text
+# Define thresholds for detecting AI-generated text and plagiarism
 ai_generated_threshold = 0.8
 ai_detection_threshold = 10  # AI Text detection threshold
+plagiarism_threshold = 10  # Plagiarism detection threshold
 
 
 def calculate_ai_percentage(text):
@@ -67,7 +68,13 @@ def detect_plagiarism_and_ai_text():
         # Identify plagiarized texts
         plagiarizedTexts = list(set(queryWordList) & set(databaseWordList))
 
-        output = "%0.02f%% Plagiarism Found" % matchPercentage
+        output = ""
+        plagiarism_status = ""
+
+        if matchPercentage >= plagiarism_threshold:
+            plagiarism_status = "Plagiarism Detected"
+        elif matchPercentage > 0:
+            plagiarism_status = "Limited Plagiarism"
 
         ai_percentage = calculate_ai_percentage(inputQuery)
         is_ai_text = ai_percentage > ai_generated_threshold
@@ -82,7 +89,8 @@ def detect_plagiarism_and_ai_text():
             ai_text=inputQuery,
             ai_percentage=ai_percentage,
             is_ai_text=is_ai_text,
-            ai_text_detected=ai_text_detected
+            ai_text_detected=ai_text_detected,
+            plagiarism_status=plagiarism_status
         )
     except Exception as e:
         return "Error occurred: " + str(e)
