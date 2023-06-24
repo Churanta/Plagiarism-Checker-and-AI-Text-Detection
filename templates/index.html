@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Plagiarism Checker and AI Text Detection</title>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap");
 
@@ -18,6 +19,10 @@
         padding: 0;
         box-sizing: border-box;
       }
+      h1:first-of-type {
+  font-size: 7vh !important;
+}
+
 
       h1 {
         color: #fff;
@@ -25,8 +30,7 @@
         
         text-align: center;
         font-family: "Luckiest Guy", cursive;
-        font-size: 45vh;
-        line-height: 550%;
+        line-height: 150%;
         background:linear-gradient(225deg,
           var(--color1) 0%, var(--color1) 9%,
           transparent 9%, 
@@ -173,6 +177,17 @@
       ::-webkit-scrollbar-thumb:hover {
         background-color: #888;
       }
+      .animation-container {
+        position: absolute;
+        top: 0px;
+        left: 120px;
+        width: 100px;
+        height: 100px;
+        z-index: 9999;
+      }
+
+
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -193,9 +208,19 @@
     </script>
   </head>
   <body onload="highlightPlagiarizedText()">
+    <div class="animation-container">
+      <lottie-player
+        src="https://assets5.lottiefiles.com/packages/lf20_9NxFrGo71i.json"
+        background="transparent"
+        speed="1"
+        style="width: 120px; height: 120px;"
+        loop
+        autoplay
+      ></lottie-player>
+    </div>
     <h1>Plagiarism Checker and AI Text Detection</h1>
     <form action="/" method="POST">
-      <label for="query-text">Enter query:</label><br />
+      
       <textarea
         name="query"
         id="query-text"
